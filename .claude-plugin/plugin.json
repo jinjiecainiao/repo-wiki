@@ -1,0 +1,11 @@
+{
+  "name": "repo-wiki",
+  "description": "Analyze any repository and generate structured wiki documentation to help newcomers understand the codebase",
+  "version": "0.1.0",
+  "author": {
+    "name": "lz"
+  },
+  "homepage": "https://github.com/lz/repo-wiki",
+  "license": "MIT",
+  "keywords": ["wiki", "documentation", "onboarding", "architecture", "codebase"]
+}
