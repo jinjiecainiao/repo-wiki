@@ -3,9 +3,9 @@
   "description": "Analyze any repository and generate structured wiki documentation to help newcomers understand the codebase",
   "version": "0.1.0",
   "author": {
-    "name": "lz"
+    "name": "jinjiecainiao"
   },
-  "homepage": "https://github.com/lz/repo-wiki",
+  "homepage": "https://github.com/jinjiecainiao/repo-wiki",
   "license": "MIT",
   "keywords": ["wiki", "documentation", "onboarding", "architecture", "codebase"]
 }

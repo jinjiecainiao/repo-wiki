@@ -17,10 +17,10 @@ A Claude Code plugin that analyzes any repository and generates structured wiki 
 
 ```bash
 # Add the marketplace (first time only)
-/plugin marketplace add YOUR_NAME/repo-wiki-marketplace
+/plugin marketplace add jinjiecainiao/repo-wiki-marketplace
 
 # Install the plugin
-/plugin install repo-wiki@YOUR_NAME
+/plugin install repo-wiki@jinjiecainiao
 ```
 
 ## Usage
