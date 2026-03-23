@@ -47,9 +47,8 @@ You will receive:
 
 ## Output Format
 
-Generate a complete Markdown document for this module in the specified language. Structure:
+Generate a complete Markdown document for this module in the specified language. Use this structure:
 
-```
 # [Module Name]
 
 ## Overview
@@ -71,6 +70,7 @@ Generate a complete Markdown document for this module in the specified language.
 
 ## Code Walkthrough
 [Step-by-step explanation of core logic]
-```
+
+---
 
 Be concise but thorough. Write for someone who has never seen this code before.
