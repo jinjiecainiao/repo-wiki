@@ -19,6 +19,13 @@ Analyze the current repository and progressively generate structured wiki docume
 
 - `--lang <code>`: Documentation language. Default: `en`. Examples: `zh-CN`, `ja`, `ko`, `en`.
 
+## Modes
+
+This skill has two modes:
+
+- **Full generation** (`/wiki`): Analyze the repository from scratch and generate the complete wiki. Use for first-time generation.
+- **Incremental update** (`/wiki update`): Detect code changes via `git diff` and only update affected documents. See "Incremental Update Flow" below.
+
 ## Output Structure
 
 ```
@@ -166,3 +173,69 @@ Default is English (`en`) if `--lang` is not specified.
 - If the repository already has `docs/` content, warn the user before overwriting
 - For unrecognized languages, fall back to directory structure + README + comment analysis (skip import parsing)
 - Keep each document concise — a newcomer should be able to read the entire wiki in under 1 hour
+
+## Incremental Update Flow (`/wiki update`)
+
+When the user runs `/wiki update`, execute the following flow instead of full generation.
+
+### Parameters
+
+- `--base <ref>`: Git ref to compare against (branch name, tag, or commit hash). Default: `main`.
+- `--lang <code>`: Documentation language, same as full generation.
+
+### Step 1: Change Detection
+
+1. Run `git diff --name-status <base>...HEAD` to get the list of changed files
+2. Classify changed files:
+   - **A (Added)**: New files
+   - **M (Modified)**: Modified files
+   - **D (Deleted)**: Deleted files
+   - **R (Renamed)**: Renamed files
+3. Map changed files to affected modules (based on file paths)
+4. Identify special changes:
+   - Config file changes (package.json, pom.xml, etc.) → may affect tech stack info in `index.md`
+   - Top-level directory structure changes → may affect `directory-structure.md`
+   - Inter-module dependency changes (import statement changes) → may affect `architecture.md`
+
+### Step 2: Handle Module Deletion/Renaming
+
+If modules are detected as deleted or renamed:
+
+1. List all detected changes and ask the user for confirmation:
+   "Detected the following module changes:
+   - `module-x`: deleted
+   - `module-y` → `module-z`: renamed
+   Please confirm: delete `docs/modules/module-x.md`? Rename `docs/modules/module-y.md` to `docs/modules/module-z.md`?"
+
+2. Wait for user confirmation before executing deletion/renaming
+
+### Step 3: Selective Regeneration
+
+Based on the scope of changes, only regenerate documents that need updating:
+
+| Change Type | Documents to Update |
+|-------------|---------------------|
+| Config file changes | `index.md` (tech stack section) |
+| Top-level directory added/removed | `directory-structure.md` |
+| Files changed within a module | Corresponding `modules/<name>.md` |
+| Inter-module dependency changes | `architecture.md` |
+| New module added | Create `modules/<name>.md` + update `architecture.md` |
+| Module deleted (after user confirmation) | Delete `modules/<name>.md` + update `architecture.md` |
+
+For module docs that need updating, dispatch `module-analyzer` agents to re-analyze (parallel when possible).
+
+### Step 4: Update Learning Path
+
+If the module list changed (additions, deletions, dependency changes), regenerate `learning-path.md`.
+If only internal module changes occurred, the learning path does not need updating.
+
+### Step 5: Show Change Summary
+
+Present an update summary to the user:
+"Incremental update complete. Compared against: `<base>`. Changes:
+- Updated: `modules/module-a.md`, `architecture.md`
+- Added: `modules/module-new.md`
+- Deleted: `modules/module-old.md` (confirmed)
+- Unchanged: `index.md`, `directory-structure.md`, `learning-path.md`
+
+Please review the updated documents."
